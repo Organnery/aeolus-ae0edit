@@ -1,10 +1,17 @@
-file = open("Bourdon16.ae0", "rb")
+#!/usr/bin/python3
+
+import sys
+
+print(sys.argv[1])
+
+# file = open("Bourdon16.ae0", "rb")
+file = open(sys.argv[1], "rb")
 
 #length in bytes of binary data in ae0 file
 length = {
     "aeolus": 7,    #AEOLUS\0
-    "check": 2,     #0x02 (02)  << should be one but ... sinon on est décalé
-    "blob1": 17,    #0x00 (00)
+    "check": 1,     #0x02 (02)
+    "blob1": 18,    #0x00 (00)
     "n_harm": 1,    #0x40 (64)
     "blob2": 1,     #0x00 (00)
     "notemin_n0": 1,     #0x24 (36)
@@ -71,19 +78,33 @@ print("Pipe Rank : " + piperank)
 
 stopname = file.read(length["stopname"]).decode("utf-8")
 print("Stop Name : " + stopname)
-chunk = file.read(length["copyrite"])
-chunk = file.read(length["mnemonic"])
-chunk = file.read(length["comments"])
+copyrite = file.read(length["copyrite"]).decode("utf-8")
+print("copyright : " + copyrite)
+mnemonic = file.read(length["mnemonic"]).decode("utf-8")
+print("mnemonic : " + mnemonic)
+comments = file.read(length["comments"]).decode("utf-8")
+print("comments : " + comments)
+chunk = file.read(length["reserved"])
 
 # get curves
 
-pipe_volume_curve = file.read(length["pipe_volume_curve"])
+chunk = file.read(length["pipe_volume_curve"])
+pipe_volume_curve = list(chunk)
+print("Pipe volume curve :")
 print(pipe_volume_curve)
 
 chunk = file.read(length["pipe_tuning_offset_curve"])
+pipe_tuning_offset_curve = list(chunk)
+print("Pipe tuning offset curve :")
+print(pipe_tuning_offset_curve)
+
 chunk = file.read(length["pipe_random_error_curve"])
 chunk = file.read(length["pipe_instability_curve"])
 chunk = file.read(length["pipe_attack_time_curve"])
+pipe_attack_time_curve = list(chunk)
+print("Pipe attick time :")
+print(pipe_attack_time_curve)
+
 chunk = file.read(length["pipe_attack_detune_curve"])
 chunk = file.read(length["pipe_decay_time_curve"])
 chunk = file.read(length["pipe_decay_detune_curve"])
