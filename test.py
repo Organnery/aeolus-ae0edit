@@ -77,7 +77,9 @@ chunk = file.read(length["comments"])
 
 # get curves
 
-chunk = file.read(length["pipe_volume_curve"])
+pipe_volume_curve = file.read(length["pipe_volume_curve"])
+print(pipe_volume_curve)
+
 chunk = file.read(length["pipe_tuning_offset_curve"])
 chunk = file.read(length["pipe_random_error_curve"])
 chunk = file.read(length["pipe_instability_curve"])
