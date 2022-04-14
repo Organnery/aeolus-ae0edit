@@ -198,25 +198,32 @@ class AeolusStop(object):
         print(active_points_real)
 
         # calculate values
+        print("updating volume curve with delta %sdb"%delta)
+        print("current volume curve :",volume_curve)
+        first_point = 99
+        current_point = 99
+        target_point = 99
         for point in range(11):
-            print("calculating point : ",point+1)
-            if active_points_real[point]: print("ACTIVE")
-            print("  current value : ",self.volume_curve[point+4])
-            print("  target value : ","")
+            # print("calculating point : ",point+1)
+            # if active_points_real[point]: print("ACTIVE")
+            # print("  current value : ",self.volume_curve[point+4])
+            # print("  target value : ","")
 
-            # curve_points[0] = self.
-        # pour calculer l'interpolation
-        #------------------------------
-        # partir de la gauche ?
-        # trouver le premier point actif (il y en a forcément 1 minimum)
+            # partir de la gauche
+            # trouver le premier point actif (il y en a forcément 1 minimum)
+            if active_points_real[point] == 0: next
+            if first_point == 99: first_point = point
+            current_point = point
             # remplir les valeurs à gauche éventuelles avec la valeur du point
+            if (first_point == current_point) and (first_point > 0):
+                for n in range(first_point):
+                    pass
             # tant qu'on est pas arrivé au dernier point
                 #chercher le point suivant à droite
+                    #vérifier si valeur actuelle + delta NOT >0
                     #si décalage > 1
                         # calculer les valeurs intermédiaires
             # remplir les valeurs à droite restantes avec la valeur du dernier point
-        print("setting volume curve with delta %sdb"%delta)
-        pass
 
 #--------------------------
 
