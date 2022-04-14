@@ -35,17 +35,6 @@ length = {
     "harmonics_attack_peak": 3072,    
 }
 
-# pipe_ranks = [
-#     ["8","16",0,"32"],
-#     ["4"],
-#     ["2 2/3"],
-#     ["2 2/3","5 1/3",0,"10 2/3"],
-#     ["2"],
-#     ["1 3/5"],
-#     ["1 1/3"],
-#     [0],
-#     ["1"]
-# ]
 pipe_ranks_text = ["32", "16", "10 2/3", "8", "5 1/3", "4", "2 2/3", "2", "1 3/5", "1 1/3", "1"]
 pipe_ranks_fn = [1,1,3,1,3,2,3,4,5,6,8]
 pipe_ranks_fd = [4,2,4,1,2,1,1,1,1,1,1]
@@ -298,9 +287,8 @@ class AeolusStop(object):
                         print("   current point",n+1," value : ",self.volume_curve[point+4-n])
                         #vérifier si valeur actuelle + delta NOT >0
                         temp = (self.volume_curve[point+4-n] + delta)
-                        if (temp > 0) or (temp < -100):
-                            print("ERROR your delta is out of range !!!")
-                            sys.exit(2)
+                        if (temp > 0.0) or (temp < -100.0):
+                            sys.exit("***********ERROR your delta is out of range !!!**************")
                         self.volume_curve[point+4-n] = self.volume_curve[point+4-n] + delta
                         print("   updating point",n+1," with value ",self.volume_curve[point+4-n])
                 #chercher le point suivant à droite
@@ -308,9 +296,8 @@ class AeolusStop(object):
                     target_point = point
                     #vérifier si valeur actuelle + delta NOT >0
                     temp = self.volume_curve[point+4] + delta
-                    if (temp > 0) or (temp < -100):
-                        print("ERROR your delta is out of range !!!")
-                        sys.exit(2)
+                    if (temp > 0.0) or (temp < -100.0):
+                        sys.exit("***********ERROR your delta is out of range !!!**************")
                     # calculer les valeurs intermédiaires
                     step = delta/(target_point-current_point)
                     print("  ramping from point",current_point+1,"to point",target_point+1,"with step",step)
@@ -321,10 +308,25 @@ class AeolusStop(object):
             # remplir les valeurs à droite restantes avec la valeur du dernier point
             if (point == 10) and (target_point < 10):
                 print("updating values after point",target_point+1)
+                #vérifier si valeur actuelle + delta NOT >0
+                temp = self.volume_curve[target_point+4] + delta
+                if (temp > 0.0) or (temp < -100.0):
+                    sys.exit("***********ERROR your delta is out of range !!!**************")
                 for n in range(11-target_point-1):
                     print("   current point",target_point+n+2," value : ",self.volume_curve[target_point+4+n+1])
                     print("   updating point",target_point+n+2," with value ",self.volume_curve[target_point+4],"of target point",target_point+1)
                     self.volume_curve[target_point+4+n+1] = self.volume_curve[target_point+4]
+            # s'il n'y avait qu'un seul point en position 1, tout mettre au même niveau après le point
+            if (point == 10) and (target_point == 99):
+                print("Single point, updating values after point",current_point+1)
+                #vérifier si valeur actuelle + delta NOT >0
+                temp = self.volume_curve[current_point+4] + delta
+                if (temp > 0.0) or (temp < -100.0):
+                    sys.exit("***********ERROR your delta is out of range !!!**************")
+                for n in range(11-current_point):
+                    print("   current point",current_point+n+1," value : ",self.volume_curve[current_point+4+n],"updating with value ",temp)
+                    self.volume_curve[current_point+4+n] = temp
+                self.volume_curve[current_point+4] = temp
         print("Final volume curve :",self.volume_curve)
 
     def get_max_volume(self):
