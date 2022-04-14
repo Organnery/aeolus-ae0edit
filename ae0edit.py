@@ -51,7 +51,6 @@ pipe_ranks_fn = [1,1,3,1,3,2,3,4,5,6,8]
 pipe_ranks_fd = [4,2,4,1,2,1,1,1,1,1,1]
 
 def get_pipe_rank(fn,fd):
-    print("fn,fd:",fn,fd)
     for i in range(11):
         if ( fn == pipe_ranks_fn [i] and fd == pipe_ranks_fd[i]):
             return pipe_ranks_text[i]
