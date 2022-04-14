@@ -3,6 +3,7 @@
 import sys
 import struct
 import getopt, sys
+from os.path import exists
 
 #length in bytes of binary data in ae0 file
 length = {
@@ -171,10 +172,6 @@ class AeolusStop(object):
         print("comments : " + self.comments)
         print("----")
 
-        # header bytes correspond to active points on the curve, not in order !!
-        # 78 72 66 60 54 48 42 36 / 0 0 0 0 0 96 90 84
-        # data is calculated (interpolated) even for inactive points
-
         self.print_curve("volume_curve")
         self.print_curve("tuning_offset_curve")
         self.print_curve("random_error_curve")
@@ -184,7 +181,30 @@ class AeolusStop(object):
         self.print_curve("decay_time_curve")
         self.print_curve("decay_detune_curve")
 
-    def volume(self, delta):
+    def set_volume_curve(self, delta):
+        # header bytes correspond to active points on the curve, not in order !!
+        # 78 72 66 60 54 48 42 36 / 0 0 0 0 0 96 90 84
+        # data is calculated (interpolated) even for inactive points
+        # data ranges from max 0 to min -100 float (=dB)
+
+        curve_map = [8,7,6,5,4,3,2,1,11,10,9]
+        active_points = [int(n) for n in bin(self.volume_curve[0])[2:].zfill(8)]
+        active_points2 = [int(n) for n in bin(self.volume_curve[1])[2:].zfill(3)]
+        active_points.extend(active_points2)
+        # reorder active points
+        active_points_real = [0,0,0,0,0,0,0,0,0,0,0]
+        for point in range(11):
+            active_points_real[curve_map[point]-1] = active_points[point] 
+        print(active_points_real)
+
+        # calculate values
+        for point in range(11):
+            print("calculating point : ",point+1)
+            if active_points_real[point]: print("ACTIVE")
+            print("  current value : ",self.volume_curve[point+4])
+            print("  target value : ","")
+
+            # curve_points[0] = self.
         # pour calculer l'interpolation
         #------------------------------
         # partir de la gauche ?
@@ -195,6 +215,7 @@ class AeolusStop(object):
                     #si décalage > 1
                         # calculer les valeurs intermédiaires
             # remplir les valeurs à droite restantes avec la valeur du dernier point
+        print("setting volume curve with delta %sdb"%delta)
         pass
 
 #--------------------------
@@ -202,13 +223,17 @@ class AeolusStop(object):
 def usage():
     print(" --Aeolus ae0 file command line manipulator--")
     print("---------------------------------------------")
+    print("usage : %s [-h|-p|--volume nn] [file.ae0]"%sys.argv[0])
+    print("options :")
     print("  -h, --help : show this help")
+    print("  -v : verbose output")
     print("  -p, --print : open a .ae0 file and show contents in structured format")
+    print("  --volume +/-nn : change global pipe volume -nndB or +nndB")
     print("")
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:o:v", ["help", "print=", "output="])
+        opts, args = getopt.getopt(sys.argv[1:], "hpv:", ["help", "print", "", "volume="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -216,24 +241,30 @@ def main():
         sys.exit(2)
     output = None
     verbose = False
+    mystop = AeolusStop("manual")
     if opts == []:
         usage()
+    # the last argument should be the file to deal with
+    if args and args[0] != '-':
+        print(args)
+        if exists(args[0]):
+            print("Opening file ", args[0])
+            mystop.load(args[0])
+        else:
+            print("File %s does not exist"%args[0])
+            sys.exit(2)
     for o, a in opts:
         if o == "-v":
             verbose = True
-        elif o in ("-h", "--help"):
+        if o in ("-h", "--help"):
             usage()
             sys.exit()
-        elif o in ("-p", "--print"):
-            print("will READ file", a)
-            mystop = AeolusStop("manual")
-            mystop.load(a)
+        if o in ("-p", "--print"):
             mystop.show()
-        elif o in ("-o", "--output"):
-            output = a
-        else:
-            assert False, "unhandled option"
-    # ...
+        if o in ("--volume"):
+            mystop.set_volume_curve(a)
+        # else:
+        #     assert False, "unhandled option"
 
 if __name__ == "__main__":
     main()
