@@ -195,14 +195,15 @@ class AeolusStop(object):
         active_points_real = [0,0,0,0,0,0,0,0,0,0,0]
         for point in range(11):
             active_points_real[curve_map[point]-1] = active_points[point] 
-        print(active_points_real)
 
         # calculate values
+        delta = float(delta)
         print("updating volume curve with delta %sdb"%delta)
-        print("current volume curve :",volume_curve)
+        print("current volume curve :",self.volume_curve)
         first_point = 99
         current_point = 99
         target_point = 99
+        ramp = 0
         for point in range(11):
             # print("calculating point : ",point+1)
             # if active_points_real[point]: print("ACTIVE")
@@ -211,19 +212,55 @@ class AeolusStop(object):
 
             # partir de la gauche
             # trouver le premier point actif (il y en a forcément 1 minimum)
-            if active_points_real[point] == 0: next
-            if first_point == 99: first_point = point
-            current_point = point
-            # remplir les valeurs à gauche éventuelles avec la valeur du point
-            if (first_point == current_point) and (first_point > 0):
-                for n in range(first_point):
-                    pass
-            # tant qu'on est pas arrivé au dernier point
+            print("Checking point ",point+1," with value ",active_points_real[point])
+            if active_points_real[point] == 0:
+                next
+            else:
+                if first_point == 99: 
+                    print("First active point found at position ",point+1)
+                    first_point = point
+                    current_point = point
+                # remplir les éventuelles valeurs à gauche avec la valeur du point + delta
+                if (0 < first_point < 11) and (point == first_point):
+                    print("  Updating point values's before position ",point+1)
+                    for n in range(first_point+1):
+                        print("   current point",n+1," value : ",self.volume_curve[point+4-n])
+                        #vérifier si valeur actuelle + delta NOT >0
+                        temp = (self.volume_curve[point+4-n] + delta)
+                        if (temp > 0) or (temp < -100):
+                            print("ERROR your delta is out of range !!!")
+                            sys.exit(2)
+                        self.volume_curve[point+4-n] = self.volume_curve[point+4-n] + delta
+                        print("   updating point",n+1," with value ",self.volume_curve[point+4-n])
                 #chercher le point suivant à droite
+                elif (0 < first_point < 11) and (0 < current_point < 11):
+                    target_point = point
                     #vérifier si valeur actuelle + delta NOT >0
-                    #si décalage > 1
-                        # calculer les valeurs intermédiaires
+                    temp = self.volume_curve[point+4] + delta
+                    if (temp > 0) or (temp < -100):
+                        print("ERROR your delta is out of range !!!")
+                        sys.exit(2)
+                    # calculer les valeurs intermédiaires
+                    step = delta/(target_point-current_point)
+                    print("  ramping from point",current_point+1,"to point",target_point+1,"with step",step)
+                    for n in range(target_point-current_point):
+                        print("    ramping point",current_point+n+2,"from value",self.volume_curve[current_point+4+n+1],"to value",self.volume_curve[current_point+4+n+1]+step)
+                        self.volume_curve[current_point+4+n+1] = self.volume_curve[current_point+4+n+1] + step
+                    current_point = point
             # remplir les valeurs à droite restantes avec la valeur du dernier point
+            if (point == 10) and (target_point < 10):
+                print("updating values after point",target_point+1)
+                for n in range(11-target_point):
+                    print("   current point",target_point+n+1," value : ",self.volume_curve[target_point+4+n])
+                    #vérifier si valeur actuelle + delta NOT >0 <100
+                    temp = self.volume_curve[target_point+4+n] + delta
+                    if (temp > 0) or (temp < -100):
+                        print("ERROR your delta is out of range !!!")
+                        sys.exit(2)
+                    self.volume_curve[target_point+4+n] = self.volume_curve[target_point+4+n] + delta
+                    print("   updating point",target_point+n+1," with value ",self.volume_curve[target_point+4+n])
+        print("Final volume curve :",self.volume_curve)
+
 
 #--------------------------
 
