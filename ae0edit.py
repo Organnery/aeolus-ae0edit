@@ -35,20 +35,28 @@ length = {
     "harmonics_attack_peak": 3072,    
 }
 
-pipe_ranks = [
-    ["8","16",0,"32"],
-    ["4"],
-    ["2 2/3"],
-    ["2 2/3","5 1/3",0,"10 2/3"],
-    ["2"],
-    ["1 3/5"],
-    ["1 1/3"],
-    [0],
-    ["1"]
-]
+# pipe_ranks = [
+#     ["8","16",0,"32"],
+#     ["4"],
+#     ["2 2/3"],
+#     ["2 2/3","5 1/3",0,"10 2/3"],
+#     ["2"],
+#     ["1 3/5"],
+#     ["1 1/3"],
+#     [0],
+#     ["1"]
+# ]
+pipe_ranks_text = ["32", "16", "10 2/3", "8", "5 1/3", "4", "2 2/3", "2", "1 3/5", "1 1/3", "1"]
+pipe_ranks_fn = [1,1,3,1,3,2,3,4,5,6,8]
+pipe_ranks_fd = [4,2,4,1,2,1,1,1,1,1,1]
 
-def get_pipe_ranks(fn,fd):
-    return pipe_ranks[fn-1][fd-1]
+def get_pipe_rank(fn,fd):
+    print("fn,fd:",fn,fd)
+    for i in range(11):
+        if ( fn == pipe_ranks_fn [i] and fd == pipe_ranks_fd[i]):
+            return pipe_ranks_text[i]
+    # print("rank(fn,fd)",fn,fd)
+    # return pipe_ranks[fn-1][fd]
 
 # aeolus stop class
 #-------------------------
@@ -116,7 +124,7 @@ class AeolusStop(object):
 
         self.piperank_fn = file.read(length["piperank_fn"])
         self.piperank_fd = file.read(length["piperank_fd"])
-        self.piperank = get_pipe_ranks(int.from_bytes(self.piperank_fn, "big"),int.from_bytes(self.piperank_fd, "big"))
+        self.piperank = get_pipe_rank(int.from_bytes(self.piperank_fn, "big"),int.from_bytes(self.piperank_fd, "big"))
 
         self.stopname = file.read(length["stopname"]).decode("utf-8")
         self.copyright = file.read(length["copyright"]).decode("utf-8")
@@ -225,9 +233,9 @@ class AeolusStop(object):
         file.write(bytearray(self.harmonics_attack_time))
         file.write(bytearray(self.harmonics_attack_peak))
 
-    def show(self):
+    def showinfo(self):
         print("--------------------------")
-        print("Pipe Rank : " + self.rank)
+        print("Pipe Rank : " + self.piperank)
 
         print("Stop Name : " + self.stopname)
         print("copyright : " + self.copyright)
@@ -235,6 +243,7 @@ class AeolusStop(object):
         print("comments : " + self.comments)
         print("----")
 
+    def showdata(self):
         self.print_curve("volume_curve")
         self.print_curve("tuning_offset_curve")
         self.print_curve("random_error_curve")
@@ -331,6 +340,7 @@ def usage():
     print("usage : %s [-h|-p|--volume nn] [file.ae0]"%sys.argv[0])
     print("options :")
     print("  -h, --help : show this help")
+    print("  -i, --info : open a .ae0 file and show basic information")
     print("  -p, --print : open a .ae0 file and show contents in structured format")
     print("  -s : saves (OVERWRITE) the changes")
     print("  -m : get maximum volume curve value and print it")
@@ -339,7 +349,7 @@ def usage():
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hpsmv:", ["help", "print", "", "volume="])
+        opts, args = getopt.getopt(sys.argv[1:], "hpismv:", ["help", "print", "info", "volume="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -363,7 +373,10 @@ def main():
             usage()
             sys.exit()
         if o in ("-p", "--print"):
-            mystop.show()
+            mystop.showinfo()
+            mystop.showdata()
+        if o in ("-i", "--info"):
+            mystop.showinfo()
         if o in ("-v","--volume"):
             mystop.set_volume_curve(a)
         if o == "-s":
