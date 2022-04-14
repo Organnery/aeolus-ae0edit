@@ -17,7 +17,7 @@ length = {
     "piperank_fn": 1,    #refer to table, based on pipe rank
     "piperank_fd": 1,    #refer to table, based on pipe rank
     "stopname": 32,     #[32] text
-    "copyrite": 56,     #[56] text
+    "copyright": 56,     #[56] text
     "mnemonic": 8,      #[8] text
     "comments": 56,     #[56] text
     "reserved": 8,      #[8]*0x00
@@ -121,7 +121,7 @@ class AeolusStop(object):
         self.piperank = get_pipe_ranks(int.from_bytes(self.piperank_fn, "big"),int.from_bytes(self.piperank_fd, "big"))
 
         self.stopname = file.read(length["stopname"]).decode("utf-8")
-        self.copyrite = file.read(length["copyrite"]).decode("utf-8")
+        self.copyright = file.read(length["copyright"]).decode("utf-8")
         self.mnemonic = file.read(length["mnemonic"]).decode("utf-8")
         self.comments = file.read(length["comments"]).decode("utf-8")
         self.reserved = file.read(length["reserved"])
@@ -159,8 +159,73 @@ class AeolusStop(object):
         print(str(getattr(self, curve)))
         print("----")
 
-    def save(self, file):
-        pass
+    def save(self, file_path):
+        try:
+            file = open(file_path, "wb")
+        except Exception as e:
+            print("could not open",file_path)
+            raise e
+
+        print("Saving curent data to file ",file_path)
+
+        # Write Header
+
+        file.write(bytearray("AEOLUS\0","utf-8"))
+        file.write(bytearray('\x02',"utf-8"))
+        file.write(bytearray('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',"utf-8"))
+        file.write(bytearray('\x40',"utf-8"))
+        file.write(bytearray('\x00',"utf-8"))
+        file.write(bytearray(self.notemin_n0))
+        file.write(bytearray(self.notemax_n1))
+        file.write(bytearray(self.piperank_fn))
+        file.write(bytearray(self.piperank_fd))
+
+        # Write bloc 1
+
+        if len(self.stopname) != length["stopname"]: print("not good stopname length")
+        else: file.write(bytearray(self.stopname,"utf-8"))
+        if len(self.copyright) != length["copyright"]: print("not good copyright length")
+        else: file.write(bytearray(self.copyright,"utf-8"))
+        if len(self.mnemonic) != length["mnemonic"]: print("not good mnemonic length")
+        else: file.write(bytearray(self.mnemonic,"utf-8"))
+        if len(self.comments) != length["comments"]: print("not good comments length")
+        else: file.write(bytearray(self.comments,"utf-8"))
+
+        file.write(bytearray('\x00\x00\x00\x00\x00\x00\x00\x00',"utf-8"))
+        
+        # write curves data
+
+        mybytes = struct.pack("BBBBfffffffffff",self.volume_curve[0],self.volume_curve[1],self.volume_curve[2],self.volume_curve[3],self.volume_curve[4],self.volume_curve[5],self.volume_curve[6],self.volume_curve[7],self.volume_curve[8],self.volume_curve[9],self.volume_curve[10],self.volume_curve[11],self.volume_curve[12],self.volume_curve[13],self.volume_curve[14])
+        if len(mybytes) != length["volume_curve"]: print("not good volume_curve",len(mybytes),length["volume_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.tuning_offset_curve[0],self.tuning_offset_curve[1],self.tuning_offset_curve[2],self.tuning_offset_curve[3],self.tuning_offset_curve[4],self.tuning_offset_curve[5],self.tuning_offset_curve[6],self.tuning_offset_curve[7],self.tuning_offset_curve[8],self.tuning_offset_curve[9],self.tuning_offset_curve[10],self.tuning_offset_curve[11],self.tuning_offset_curve[12],self.tuning_offset_curve[13],self.tuning_offset_curve[14])
+        if len(mybytes) != length["tuning_offset_curve"]: print("not good tuning_offset_curve",len(mybytes),length["tuning_offset_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.random_error_curve[0],self.random_error_curve[1],self.random_error_curve[2],self.random_error_curve[3],self.random_error_curve[4],self.random_error_curve[5],self.random_error_curve[6],self.random_error_curve[7],self.random_error_curve[8],self.random_error_curve[9],self.random_error_curve[10],self.random_error_curve[11],self.random_error_curve[12],self.random_error_curve[13],self.random_error_curve[14])
+        if len(mybytes) != length["random_error_curve"]: print("not good random_error_curve",len(mybytes),length["random_error_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.instability_curve[0],self.instability_curve[1],self.instability_curve[2],self.instability_curve[3],self.instability_curve[4],self.instability_curve[5],self.instability_curve[6],self.instability_curve[7],self.instability_curve[8],self.instability_curve[9],self.instability_curve[10],self.instability_curve[11],self.instability_curve[12],self.instability_curve[13],self.instability_curve[14])
+        if len(mybytes) != length["instability_curve"]: print("not good instability_curve",len(mybytes),length["instability_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.attack_time_curve[0],self.attack_time_curve[1],self.attack_time_curve[2],self.attack_time_curve[3],self.attack_time_curve[4],self.attack_time_curve[5],self.attack_time_curve[6],self.attack_time_curve[7],self.attack_time_curve[8],self.attack_time_curve[9],self.attack_time_curve[10],self.attack_time_curve[11],self.attack_time_curve[12],self.attack_time_curve[13],self.attack_time_curve[14])
+        if len(mybytes) != length["attack_time_curve"]: print("not good attack_time_curve",len(mybytes),length["attack_time_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.attack_detune_curve[0],self.attack_detune_curve[1],self.attack_detune_curve[2],self.attack_detune_curve[3],self.attack_detune_curve[4],self.attack_detune_curve[5],self.attack_detune_curve[6],self.attack_detune_curve[7],self.attack_detune_curve[8],self.attack_detune_curve[9],self.attack_detune_curve[10],self.attack_detune_curve[11],self.attack_detune_curve[12],self.attack_detune_curve[13],self.attack_detune_curve[14])
+        if len(mybytes) != length["attack_detune_curve"]: print("not good attack_detune_curve",len(mybytes),length["attack_detune_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.decay_time_curve[0],self.decay_time_curve[1],self.decay_time_curve[2],self.decay_time_curve[3],self.decay_time_curve[4],self.decay_time_curve[5],self.decay_time_curve[6],self.decay_time_curve[7],self.decay_time_curve[8],self.decay_time_curve[9],self.decay_time_curve[10],self.decay_time_curve[11],self.decay_time_curve[12],self.decay_time_curve[13],self.decay_time_curve[14])
+        if len(mybytes) != length["decay_time_curve"]: print("not good decay_time_curve",len(mybytes),length["decay_time_curve"])
+        else: file.write(mybytes)
+        mybytes = struct.pack("BBBBfffffffffff",self.decay_detune_curve[0],self.decay_detune_curve[1],self.decay_detune_curve[2],self.decay_detune_curve[3],self.decay_detune_curve[4],self.decay_detune_curve[5],self.decay_detune_curve[6],self.decay_detune_curve[7],self.decay_detune_curve[8],self.decay_detune_curve[9],self.decay_detune_curve[10],self.decay_detune_curve[11],self.decay_detune_curve[12],self.decay_detune_curve[13],self.decay_detune_curve[14])
+        if len(mybytes) != length["decay_detune_curve"]: print("not good decay_detune_curve",len(mybytes),length["decay_detune_curve"])
+        else: file.write(mybytes)
+
+        # write harmonics data
+
+        file.write(bytearray(self.harmonics_level))
+        file.write(bytearray(self.harmonics_random))
+        file.write(bytearray(self.harmonics_attack_time))
+        file.write(bytearray(self.harmonics_attack_peak))
 
     def show(self):
         print("--------------------------")
@@ -266,13 +331,14 @@ def usage():
     print("options :")
     print("  -h, --help : show this help")
     print("  -v : verbose output")
+    print("  -s : saves (OVERWRITE) the changes")
     print("  -p, --print : open a .ae0 file and show contents in structured format")
     print("  --volume +/-nn : change global pipe volume -nndB or +nndB")
     print("")
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hpv:", ["help", "print", "", "volume="])
+        opts, args = getopt.getopt(sys.argv[1:], "hpsv:", ["help", "print", "", "volume="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -281,6 +347,7 @@ def main():
     output = None
     verbose = False
     mystop = AeolusStop("manual")
+    save = False
     if opts == []:
         usage()
     # the last argument should be the file to deal with
@@ -302,8 +369,13 @@ def main():
             mystop.show()
         if o in ("--volume"):
             mystop.set_volume_curve(a)
+        if o == "-s":
+            save = True
         # else:
         #     assert False, "unhandled option"
+    if save:
+        mystop.save("out.ae0")
+        # mystop.save(args[0])
 
 if __name__ == "__main__":
     main()
