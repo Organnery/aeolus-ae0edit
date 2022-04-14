@@ -96,16 +96,14 @@ class AeolusStop(object):
         #--------------------------
 
         ae0file = file.read(length["aeolus"])
-        if ae0file.decode("utf-8") == "AEOLUS\0":
-            print("AEOLUS format found")
-        else:
-            raise "This files does not look like a valid aeolus file"
+        if ae0file.decode("utf-8") != "AEOLUS\0":
+            print("This files does not look like a valid aeolus file")
+            sys.exit(2)
 
         check = file.read(length["check"])
-        if check == b'\x02':
-            print("Check found")
-        else:
-            raise "This files does not look like a valid aeolus file"
+        if check != b'\x02':
+            print("This files does not look like a valid aeolus file")
+            sys.exit(2)
 
         # get basic infos
         #--------------------------
@@ -335,13 +333,13 @@ def usage():
     print("  -h, --help : show this help")
     print("  -p, --print : open a .ae0 file and show contents in structured format")
     print("  -s : saves (OVERWRITE) the changes")
-    print("  -g : gat max volume curve value and print it")
+    print("  -m : get maximum volume curve value and print it")
     print("  -v, --volume +/-nn : change global pipe volume -nndB or +nndB")
     print("")
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hpsgv:", ["help", "print", "", "volume="])
+        opts, args = getopt.getopt(sys.argv[1:], "hpsmv:", ["help", "print", "", "volume="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
@@ -354,7 +352,6 @@ def main():
         usage()
     # the last argument should be the file to deal with
     if args and args[0] != '-':
-        print(args)
         if exists(args[0]):
             print("Opening file ", args[0])
             mystop.load(args[0])
@@ -371,7 +368,7 @@ def main():
             mystop.set_volume_curve(a)
         if o == "-s":
             save = True
-        if o == "-g":
+        if o == "-m":
             mystop.get_max_volume()
         # else:
         #     assert False, "unhandled option"
