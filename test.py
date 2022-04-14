@@ -321,6 +321,9 @@ class AeolusStop(object):
                     self.volume_curve[target_point+4+n+1] = self.volume_curve[target_point+4]
         print("Final volume curve :",self.volume_curve)
 
+    def get_max_volume(self):
+        print("Maximum Volume value :",max(self.volume_curve[4:]))
+
 
 #--------------------------
 
@@ -330,22 +333,21 @@ def usage():
     print("usage : %s [-h|-p|--volume nn] [file.ae0]"%sys.argv[0])
     print("options :")
     print("  -h, --help : show this help")
-    print("  -v : verbose output")
-    print("  -s : saves (OVERWRITE) the changes")
     print("  -p, --print : open a .ae0 file and show contents in structured format")
-    print("  --volume +/-nn : change global pipe volume -nndB or +nndB")
+    print("  -s : saves (OVERWRITE) the changes")
+    print("  -g : gat max volume curve value and print it")
+    print("  -v, --volume +/-nn : change global pipe volume -nndB or +nndB")
     print("")
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hpsv:", ["help", "print", "", "volume="])
+        opts, args = getopt.getopt(sys.argv[1:], "hpsgv:", ["help", "print", "", "volume="])
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
         usage()
         sys.exit(2)
     output = None
-    verbose = False
     mystop = AeolusStop("manual")
     save = False
     if opts == []:
@@ -360,17 +362,17 @@ def main():
             print("File %s does not exist"%args[0])
             sys.exit(2)
     for o, a in opts:
-        if o == "-v":
-            verbose = True
         if o in ("-h", "--help"):
             usage()
             sys.exit()
         if o in ("-p", "--print"):
             mystop.show()
-        if o in ("--volume"):
+        if o in ("-v","--volume"):
             mystop.set_volume_curve(a)
         if o == "-s":
             save = True
+        if o == "-g":
+            mystop.get_max_volume()
         # else:
         #     assert False, "unhandled option"
     if save:
