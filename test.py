@@ -72,7 +72,7 @@ class AeolusStop(object):
         self.copyright = ""
         self.mnemonic = ""
         self.comments = ""
-        self.volume_curve = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.volume_curve = ["0","0",0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.tuning_offset_curve = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.random_error_curve = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.instability_curve = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -130,21 +130,21 @@ class AeolusStop(object):
         #--------------------------
 
         chunk = file.read(length["volume_curve"])
-        [self.volume_curve[0],self.volume_curve[1],self.volume_curve[2],self.volume_curve[3],self.volume_curve[4],self.volume_curve[5],self.volume_curve[6],self.volume_curve[7],self.volume_curve[8],self.volume_curve[9],self.volume_curve[10],self.volume_curve[11],self.volume_curve[12],self.volume_curve[13],self.volume_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.volume_curve[0],self.volume_curve[1],self.volume_curve[2],self.volume_curve[3],self.volume_curve[4],self.volume_curve[5],self.volume_curve[6],self.volume_curve[7],self.volume_curve[8],self.volume_curve[9],self.volume_curve[10],self.volume_curve[11],self.volume_curve[12],self.volume_curve[13],self.volume_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["tuning_offset_curve"])
-        [self.tuning_offset_curve[0],self.tuning_offset_curve[1],self.tuning_offset_curve[2],self.tuning_offset_curve[3],self.tuning_offset_curve[4],self.tuning_offset_curve[5],self.tuning_offset_curve[6],self.tuning_offset_curve[7],self.tuning_offset_curve[8],self.tuning_offset_curve[9],self.tuning_offset_curve[10],self.tuning_offset_curve[11],self.tuning_offset_curve[12],self.tuning_offset_curve[13],self.tuning_offset_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.tuning_offset_curve[0],self.tuning_offset_curve[1],self.tuning_offset_curve[2],self.tuning_offset_curve[3],self.tuning_offset_curve[4],self.tuning_offset_curve[5],self.tuning_offset_curve[6],self.tuning_offset_curve[7],self.tuning_offset_curve[8],self.tuning_offset_curve[9],self.tuning_offset_curve[10],self.tuning_offset_curve[11],self.tuning_offset_curve[12],self.tuning_offset_curve[13],self.tuning_offset_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["random_error_curve"])
-        [self.random_error_curve[0],self.random_error_curve[1],self.random_error_curve[2],self.random_error_curve[3],self.random_error_curve[4],self.random_error_curve[5],self.random_error_curve[6],self.random_error_curve[7],self.random_error_curve[8],self.random_error_curve[9],self.random_error_curve[10],self.random_error_curve[11],self.random_error_curve[12],self.random_error_curve[13],self.random_error_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.random_error_curve[0],self.random_error_curve[1],self.random_error_curve[2],self.random_error_curve[3],self.random_error_curve[4],self.random_error_curve[5],self.random_error_curve[6],self.random_error_curve[7],self.random_error_curve[8],self.random_error_curve[9],self.random_error_curve[10],self.random_error_curve[11],self.random_error_curve[12],self.random_error_curve[13],self.random_error_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["instability_curve"])
-        [self.instability_curve[0],self.instability_curve[1],self.instability_curve[2],self.instability_curve[3],self.instability_curve[4],self.instability_curve[5],self.instability_curve[6],self.instability_curve[7],self.instability_curve[8],self.instability_curve[9],self.instability_curve[10],self.instability_curve[11],self.instability_curve[12],self.instability_curve[13],self.instability_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.instability_curve[0],self.instability_curve[1],self.instability_curve[2],self.instability_curve[3],self.instability_curve[4],self.instability_curve[5],self.instability_curve[6],self.instability_curve[7],self.instability_curve[8],self.instability_curve[9],self.instability_curve[10],self.instability_curve[11],self.instability_curve[12],self.instability_curve[13],self.instability_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["attack_time_curve"])
-        [self.attack_time_curve[0],self.attack_time_curve[1],self.attack_time_curve[2],self.attack_time_curve[3],self.attack_time_curve[4],self.attack_time_curve[5],self.attack_time_curve[6],self.attack_time_curve[7],self.attack_time_curve[8],self.attack_time_curve[9],self.attack_time_curve[10],self.attack_time_curve[11],self.attack_time_curve[12],self.attack_time_curve[13],self.attack_time_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.attack_time_curve[0],self.attack_time_curve[1],self.attack_time_curve[2],self.attack_time_curve[3],self.attack_time_curve[4],self.attack_time_curve[5],self.attack_time_curve[6],self.attack_time_curve[7],self.attack_time_curve[8],self.attack_time_curve[9],self.attack_time_curve[10],self.attack_time_curve[11],self.attack_time_curve[12],self.attack_time_curve[13],self.attack_time_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["attack_detune_curve"])
-        [self.attack_detune_curve[0],self.attack_detune_curve[1],self.attack_detune_curve[2],self.attack_detune_curve[3],self.attack_detune_curve[4],self.attack_detune_curve[5],self.attack_detune_curve[6],self.attack_detune_curve[7],self.attack_detune_curve[8],self.attack_detune_curve[9],self.attack_detune_curve[10],self.attack_detune_curve[11],self.attack_detune_curve[12],self.attack_detune_curve[13],self.attack_detune_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.attack_detune_curve[0],self.attack_detune_curve[1],self.attack_detune_curve[2],self.attack_detune_curve[3],self.attack_detune_curve[4],self.attack_detune_curve[5],self.attack_detune_curve[6],self.attack_detune_curve[7],self.attack_detune_curve[8],self.attack_detune_curve[9],self.attack_detune_curve[10],self.attack_detune_curve[11],self.attack_detune_curve[12],self.attack_detune_curve[13],self.attack_detune_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["decay_time_curve"])
-        [self.decay_time_curve[0],self.decay_time_curve[1],self.decay_time_curve[2],self.decay_time_curve[3],self.decay_time_curve[4],self.decay_time_curve[5],self.decay_time_curve[6],self.decay_time_curve[7],self.decay_time_curve[8],self.decay_time_curve[9],self.decay_time_curve[10],self.decay_time_curve[11],self.decay_time_curve[12],self.decay_time_curve[13],self.decay_time_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.decay_time_curve[0],self.decay_time_curve[1],self.decay_time_curve[2],self.decay_time_curve[3],self.decay_time_curve[4],self.decay_time_curve[5],self.decay_time_curve[6],self.decay_time_curve[7],self.decay_time_curve[8],self.decay_time_curve[9],self.decay_time_curve[10],self.decay_time_curve[11],self.decay_time_curve[12],self.decay_time_curve[13],self.decay_time_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
         chunk = file.read(length["decay_detune_curve"])
-        [self.decay_detune_curve[0],self.decay_detune_curve[1],self.decay_detune_curve[2],self.decay_detune_curve[3],self.decay_detune_curve[4],self.decay_detune_curve[5],self.decay_detune_curve[6],self.decay_detune_curve[7],self.decay_detune_curve[8],self.decay_detune_curve[9],self.decay_detune_curve[10],self.decay_detune_curve[11],self.decay_detune_curve[12],self.decay_detune_curve[13],self.decay_detune_curve[14]] = struct.unpack('bbbbfffffffffff',chunk)
+        [self.decay_detune_curve[0],self.decay_detune_curve[1],self.decay_detune_curve[2],self.decay_detune_curve[3],self.decay_detune_curve[4],self.decay_detune_curve[5],self.decay_detune_curve[6],self.decay_detune_curve[7],self.decay_detune_curve[8],self.decay_detune_curve[9],self.decay_detune_curve[10],self.decay_detune_curve[11],self.decay_detune_curve[12],self.decay_detune_curve[13],self.decay_detune_curve[14]] = struct.unpack('BBBBfffffffffff',chunk)
 
         # get harmonic data
         #--------------------------
@@ -250,15 +250,10 @@ class AeolusStop(object):
             # remplir les valeurs à droite restantes avec la valeur du dernier point
             if (point == 10) and (target_point < 10):
                 print("updating values after point",target_point+1)
-                for n in range(11-target_point):
-                    print("   current point",target_point+n+1," value : ",self.volume_curve[target_point+4+n])
-                    #vérifier si valeur actuelle + delta NOT >0 <100
-                    temp = self.volume_curve[target_point+4+n] + delta
-                    if (temp > 0) or (temp < -100):
-                        print("ERROR your delta is out of range !!!")
-                        sys.exit(2)
-                    self.volume_curve[target_point+4+n] = self.volume_curve[target_point+4+n] + delta
-                    print("   updating point",target_point+n+1," with value ",self.volume_curve[target_point+4+n])
+                for n in range(11-target_point-1):
+                    print("   current point",target_point+n+2," value : ",self.volume_curve[target_point+4+n+1])
+                    print("   updating point",target_point+n+2," with value ",self.volume_curve[target_point+4],"of target point",target_point+1)
+                    self.volume_curve[target_point+4+n+1] = self.volume_curve[target_point+4]
         print("Final volume curve :",self.volume_curve)
 
 
