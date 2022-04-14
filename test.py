@@ -373,8 +373,7 @@ def main():
         # else:
         #     assert False, "unhandled option"
     if save:
-        mystop.save("out.ae0")
-        # mystop.save(args[0])
+        mystop.save(args[0])
 
 if __name__ == "__main__":
     main()
