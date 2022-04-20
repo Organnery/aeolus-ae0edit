@@ -338,7 +338,7 @@ class AeolusStop(object):
 def usage():
     print(" --Aeolus ae0 file command line manipulator--")
     print("---------------------------------------------")
-    print("usage : %s [-h|-p|--volume nn] [file.ae0]"%sys.argv[0])
+    print("usage : %s [-h|-i|-p|-s|-m|-v|--volume nn] [file.ae0]"%sys.argv[0])
     print("options :")
     print("  -h, --help : show this help")
     print("  -i, --info : open a .ae0 file and show basic information")
